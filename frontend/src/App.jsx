@@ -6,6 +6,7 @@ function App() {
   const [meetingUrl, setMeetingUrl] = useState("");
   const [createdMeeting, setCreatedMeeting] = useState(null);
   const [error, setError] = useState("");
+  const [participation, setParticipation] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,6 +31,32 @@ function App() {
 
       const data = await res.json();
       setCreatedMeeting(data);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
+  };
+
+  const handleRefreshStatus = async () => {
+    if (!createdMeeting) return;
+    try {
+      const res = await fetch(`/api/meetings/${createdMeeting.id}`);
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      setCreatedMeeting(data);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
+  }; 
+  
+  const fetchParticipation = async () => {
+    if (!createdMeeting) return;
+    try {
+      const res = await fetch(`/api/meetings/${createdMeeting.id}/participation`);
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      setParticipation(data);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -98,8 +125,18 @@ function App() {
           <p><strong>Provider:</strong> {createdMeeting.provider}</p>
           <p><strong>Status:</strong> {createdMeeting.status}</p>
           <p><strong>Recall Bot ID:</strong> {createdMeeting.recall_bot_id || "pending / unknown"}</p>
+          <p><strong>Recall Bot Status:</strong> {createdMeeting.recall_bot_status || "unknown"}</p>
+
+          <button
+            type="button"
+            onClick={handleRefreshStatus}
+            style={{ marginTop: 12, padding: 8, cursor: "pointer" }}
+          >
+            Refresh Bot Status
+          </button>
         </div>
       )}
+
 
     </div>
   );

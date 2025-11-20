@@ -1,11 +1,10 @@
 from fastapi import FastAPI
-from app.routers import meetings  # 👈 import router
+from app.routers import meetings, recall_webhook
 
 app = FastAPI(title="Meeting Participation Analyzer API")
 
-# 👇 register router so /api/meetings exists
 app.include_router(meetings.router)
-
+app.include_router(recall_webhook.router)
 
 @app.get("/health")
 async def health_check():
