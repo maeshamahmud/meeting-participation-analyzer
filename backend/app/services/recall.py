@@ -1,42 +1,38 @@
 import httpx
 from typing import Optional
+
 from app.config import settings
 
 
 class RecallAIError(Exception):
-    """Custom exception for Recall.ai-related errors."""
+    pass
 
 
 async def create_meeting_bot(
     meeting_url: str,
     *,
-    name: Optional[str] = None,
+    bot_name: Optional[str] = None,
 ) -> dict:
-    """
-    Calls Recall.ai's Create Meeting Bot endpoint.
+    base_url = f"https://{settings.recall_region}.recall.ai"
+    url = f"{base_url}/api/v1/bot"
 
-    NOTE: This is a template. You may need to tweak the URL and payload
-    to match the latest Recall.ai docs.
-    """
-    url = f"{settings.recall_api_base_url}/v1/meeting-bots"
-
-    payload = {
+    # 🔴 We REMOVE transcription_options because the API rejects it.
+    payload: dict = {
         "meeting_url": meeting_url,
     }
-    if name:
-        payload["name"] = name
+    if bot_name:
+        payload["bot_name"] = bot_name
 
     headers = {
-        "Authorization": f"Bearer {settings.recall_api_key}",
+        "Authorization": f"Token {settings.recall_api_key}",
         "Content-Type": "application/json",
     }
 
-    async with httpx.AsyncClient(timeout=10) as client:
+    async with httpx.AsyncClient(timeout=15) as client:
         resp = await client.post(url, json=payload, headers=headers)
 
     if resp.status_code >= 400:
-        raise RecallAIError(
-            f"Recall.ai error {resp.status_code}: {resp.text}"
-        )
+        # Surface full body so we can see future issues
+        raise RecallAIError(f"Recall.ai error {resp.status_code}: {resp.text}")
 
     return resp.json()

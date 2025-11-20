@@ -1,15 +1,16 @@
-from pydantic import BaseSettings, AnyHttpUrl
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     recall_api_key: str
-    recall_api_base_url: AnyHttpUrl = "https://api.recall.ai"
+    recall_region: str  # e.g. "us-west-2"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
+    # Pydantic v2 settings config
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",        # ignore env vars we don't have fields for
+    )
 
 
 settings = Settings()
-
