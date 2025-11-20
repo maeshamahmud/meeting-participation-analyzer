@@ -97,8 +97,10 @@ function App() {
           <p><strong>Title:</strong> {createdMeeting.title}</p>
           <p><strong>Provider:</strong> {createdMeeting.provider}</p>
           <p><strong>Status:</strong> {createdMeeting.status}</p>
+          <p><strong>Recall Bot ID:</strong> {createdMeeting.recall_bot_id || "pending / unknown"}</p>
         </div>
       )}
+
     </div>
   );
 }
