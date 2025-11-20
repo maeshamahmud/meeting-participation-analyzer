@@ -16,7 +16,6 @@ async def create_meeting_bot(
     base_url = f"https://{settings.recall_region}.recall.ai"
     url = f"{base_url}/api/v1/bot"
 
-    # 🔴 We REMOVE transcription_options because the API rejects it.
     payload: dict = {
         "meeting_url": meeting_url,
     }
